@@ -1,0 +1,31 @@
+{
+  "name": "git-shizzle",
+  "version": "0.0.0",
+  "description": "Does git shizzle",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec --ui bdd test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/3rd-Eden/git-shizzle"
+  },
+  "keywords": [
+    "git",
+    "shizzle"
+  ],
+  "author": "Arnout Kazemier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/3rd-Eden/git-shizzle/issues"
+  },
+  "homepage": "https://github.com/3rd-Eden/git-shizzle",
+  "dependencies": {
+    "fusing": "^0.3.2"
+  },
+  "devDependencies": {
+    "assume": "0.0.9",
+    "mocha": "^1.21.4",
+    "pre-commit": "0.0.9"
+  }
+}
