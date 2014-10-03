@@ -1,10 +1,19 @@
 'use strict';
 
 //
-//
+// Most of the output placeholders which are supported by the git command line's
+// --format flag. Currently not including the table separators.
 //
 var formats = /^%(H|h|T|t|P|p|an|aN|ae|aE|ad|aD|ar|at|ai|cn|cN|ce|cE|cd|cD|cr|ct|ci|d|e|s|f|b|B|N|GG|G\?|GS|GK|gD|gd|gn|gN|ge|gE|gs|m|n|\%|x00)/;
 
+/**
+ * Parse the outputted lines to a JSON object.
+ *
+ * @param {String} line The outputted line.
+ * @param {String} format Format that we used to output the line.
+ * @returns {Object}
+ * @api public
+ */
 function parser(line, format) {
   //
   // Start by cleaning up the output that could have been added by the `--graph`
@@ -77,8 +86,10 @@ function parser(line, format) {
     }
   }
 
-  console.log(data);
   return data;
 }
 
+//
+// Expose the module
+//
 module.exports = parser;
