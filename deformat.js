@@ -5,13 +5,13 @@
 // --format flag. Currently not including the table separators.
 //
 var placeholders = 'H|h|T|t|P|p|an|aN|ae|aE|ad|aD|ar|at|ai|cn|cN|ce|cE|cd|cD|cr|ct|ci|d|e|s|f|b|B|N|GG|G\\?|GS|GK|gD|gd|gn|gN|ge|gE|gs|m|n|\\%|x00'
-  , reformat = new RegExp('^(%['+ placeholders +'])')
+  , reformat = new RegExp('(%('+ placeholders +'))', 'g')
   , formats = new RegExp('^%('+ placeholders +')');
 
 //
 // Create a separator which we will use to container the placeholders.
 //
-var separator = '\ufffdGitShizzle'+ Math.random() +'\ufffd';
+var separator = '\ufffdgit-shizzle\ufffd';
 
 /**
  * Parse the outputted lines to a JSON object.
@@ -116,12 +116,13 @@ function parser(line, format) {
  * @returns {String} reformatted string.
  * @api public
  */
-function reformat(args) {
-  return args.replace(reformat, separator +'$2'+ separator);
+function reformatter(args) {
+  return args.replace(reformat, separator +'$1'+ separator);
 }
 
 //
 // Expose the module.
 //
-parser.reformat = reformat;
+parser.reformat = reformatter;
+parser.separator = separator;
 module.exports = parser;
