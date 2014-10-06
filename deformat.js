@@ -5,8 +5,7 @@
 // --format flag. Currently not including the table separators.
 //
 var placeholders = 'H|h|T|t|P|p|an|aN|ae|aE|ad|aD|ar|at|ai|cn|cN|ce|cE|cd|cD|cr|ct|ci|d|e|s|f|b|B|N|GG|G\\?|GS|GK|gD|gd|gn|gN|ge|gE|gs|m|n|\\%|x00'
-  , reformat = new RegExp('(%('+ placeholders +'))', 'g')
-  , formats = new RegExp('^%('+ placeholders +')');
+  , reformat = new RegExp('(%('+ placeholders +'))', 'g');
 
 //
 // Create a separator which we will use to container the placeholders.
@@ -28,81 +27,32 @@ function parser(line, format) {
   // lines.
   //
   line = line.replace(/^\*\s+/, '');
+  if (!~format.indexOf(separator)) format = reformatter(format);
+  format = format.split(separator);
 
-  var op
-    , result
+  var result = line.split(separator)
+    , length = format.length
     , data = {}
-    , lineindex = 0
-    , formatindex = 0;
+    , i = 0;
 
-  while (formatindex !== format.length) {
-    if (
-       format.charAt(formatindex) !== '%'
-    || !(op = formats.exec(format.slice(formatindex)))
-    ) {
-      lineindex++;
-      formatindex++;
-      continue;
-    }
+  for (; i < length; i++) {
+    if (format[i].charAt(0) !== '%') continue;
 
-    formatindex += op[0].length;
-
-    //
-    // Pre-parse the formats as certain formats share the same data formatting
-    // so this allows us to remove a lot of duplicate code and just have
-    // a separation of parsing and data assignment.
-    //
-    switch (op[1]) {
-      case 'H': case 'P': case 'T':  // Full hash parsing.
-        result = line.substr(lineindex, 40);
-        lineindex += 40;
-      break;
-
-      case 'h': case 'p': case 't': // Abbrv hash parsing.
-        result = line.substr(lineindex, 7);
-        lineindex += 7;
-      break;
-
-      case 'at': case 'ct': // Unix timestamps.
-        result = /(\d+)/.exec(line.substr(lineindex));
-        lineindex += result[0].length;
-        result[1] = +result[1];
-      break;
-
-      case 'ar': case 'cr': // Relative date.
-        result = /^(\d+\s\w+\sago)/.exec(line.substr(lineindex));
-        lineindex += result[0].length;
-      break;
-
-      case 'aD': case 'cD': // RFC date parsing.
-        result = /^(\w{3}\,\s\d+\s\w{3}\s\d{4}\s\d{2}\:\d{2}\:\d{2}\s[+-]\d{4})/g.exec(line.substr(lineindex));
-        lineindex += result[0].length;
-      break;
-
-      case 'ai': case 'ci': // ISO date parsing.
-        result = /(\d{4}-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s[+-]\d{4})/.exec(line.substr(lineindex));
-        lineindex += result[0].length;
-      break;
-    }
-
-    //
-    // Assign all the parse results on the data object.
-    //
-    switch (op[1]) {
-      case 'h': data.abbrevcommithash = result; break;
-      case 'p': data.abbrevparenthash = result; break;
-      case 't': data.abbrevtreehash = result;   break;
-      case 'H': data.commithash = result; break;
-      case 'P': data.parenthash = result; break;
-      case 'T': data.treehash = result;   break;
-      case 'at': data.authored = data.authored || {}; data.authored.unix = result[1]; break;
-      case 'ct': data.commited = data.commited || {}; data.commited.unix = result[1]; break;
-      case 'ar': data.authored = data.authored || {}; data.authored.ago = result[1]; break;
-      case 'cr': data.commited = data.commited || {}; data.comimted.ago = result[1]; break;
-      case 'aD': data.authored = data.authored || {}; data.authored.rfc = result[1]; break;
-      case 'cD': data.commited = data.commited || {}; data.commited.rfc = result[1]; break;
-      case 'ai': data.authored = data.authored || {}; data.authored.iso = result[1]; break;
-      case 'ci': data.commited = data.commited || {}; data.commited.iso = result[1]; break;
+    switch (format[i]) {
+      case '%h': data.abbrevcommithash = result[i]; break;
+      case '%p': data.abbrevparenthash = result[i]; break;
+      case '%t': data.abbrevtreehash = result[i];   break;
+      case '%H': data.commithash = result[i]; break;
+      case '%P': data.parenthash = result[i]; break;
+      case '%T': data.treehash = result[i];   break;
+      case '%at': data.authored = data.authored || {}; data.authored.unix = +result[i]; break;
+      case '%ct': data.commited = data.commited || {}; data.commited.unix = +result[i]; break;
+      case '%ar': data.authored = data.authored || {}; data.authored.ago = result[i]; break;
+      case '%cr': data.commited = data.commited || {}; data.comimted.ago = result[i]; break;
+      case '%aD': data.authored = data.authored || {}; data.authored.rfc = result[i]; break;
+      case '%cD': data.commited = data.commited || {}; data.commited.rfc = result[i]; break;
+      case '%ai': data.authored = data.authored || {}; data.authored.iso = result[i]; break;
+      case '%ci': data.commited = data.commited || {}; data.commited.iso = result[i]; break;
     }
   }
 
@@ -112,6 +62,7 @@ function parser(line, format) {
 /**
  * Reformat the format pattern so we can actually parse it.
  *
+ * @TODO specifically check for the --format or --pretty="format:" flags>
  * @param {String} args The arguments which could contain a format
  * @returns {String} reformatted string.
  * @api public

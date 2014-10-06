@@ -100,9 +100,8 @@ shelly.exec('git help -a', {
   Git.readable(method, function proxycmd(params, fn) {
     var git = 'git '+ cmd +' ';
 
-
+    if ('string' === typeof params) git += format.reformat(params);
     if ('function' === typeof params) fn = params;
-    if ('string' === typeof params) git += params;
 
     shelly.cd(this.__dirname);
     debug('executing cmd', git);
@@ -140,11 +139,9 @@ Git.parse('tags', {
   params: '--date-order --simplify-by-decoration --pretty=format:"'+ formats +'"',
   cmd: 'log'
 }, function parse(output) {
-  output.split(/\n/).slice(0, 1).map(function map(line) {
+  return output.split(/\n/).map(function map(line) {
     return format(line, formats);
   });
-
-  return output;
 });
 
 //
