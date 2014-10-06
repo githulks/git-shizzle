@@ -1,7 +1,7 @@
 'use strict';
 
 var debug = require('diagnostics')('git-shizzle')
-  , format = require('./deformat')
+  , formatter = require('./deformat')
   , shelly = require('shelljs')
   , fuse = require('fusing');
 
@@ -98,10 +98,15 @@ shelly.exec('git help -a', {
    * @api public
    */
   Git.readable(method, function proxycmd(params, fn) {
-    var git = 'git '+ cmd +' ';
+    var git = 'git '+ cmd +' '
+      , format;
 
-    if ('string' === typeof params) git += format.reformat(params);
-    if ('function' === typeof params) fn = params;
+    if ('string' === typeof params) {
+      format = formatter.extract(params);
+      git += formatter.reformat(params);
+    } else if ('function' === typeof params) {
+      fn = params;
+    }
 
     shelly.cd(this.__dirname);
     debug('executing cmd', git);
@@ -132,15 +137,12 @@ Git.parse = function parse(method, data, fn) {
   return Git;
 };
 
-var formats = '--%ai';
-
 Git.parse('tags', {
-  //params: '--date-order --graph --tags --simplify-by-decoration --pretty=format:"%ai %h %d %s %cr %ae"',
-  params: '--date-order --simplify-by-decoration --pretty=format:"'+ formats +'"',
+  params: '--date-order --graph --tags --simplify-by-decoration --pretty=format:"%ai %h %d %s %cr %ae"',
   cmd: 'log'
-}, function parse(output) {
+}, function parse(output, format) {
   return output.split(/\n/).map(function map(line) {
-    return format(line, formats);
+    return formatter(line, format);
   });
 });
 
