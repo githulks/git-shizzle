@@ -30,16 +30,27 @@ function Git(dir) {
   this.parse = this._parsers.reduce(function (parsers, parser) {
     parsers[parser.method] = function proxy(params, fn) {
       var async = 'function' === typeof arguments[arguments.length - 1]
-        , args = parser.params +' ';
+        , args = parser.params +' '
+        , format;
 
-      if ('function' === typeof params) fn = params;
-      if ('string' === typeof params) args += params;
+      if ('string' === typeof params) {
+        args += params;
+      } else if ('function' === typeof params) {
+        fn = params;
+      }
 
-      if (!async) return parser.fn(git[parser.method](args));
+      //
+      // Extract the format so we can use it in our parser.
+      //
+      format = formatter.extract(args) || '';
+      args = formatter.reformat(args);
+
+      if (!async) return parser.fn(git[parser.method](args), format);
+
       return git[parser.cmd || parser.method](args, function async(code, output) {
         if (+code) return fn(code, output);
 
-        fn(code, parser.fn(output));
+        fn(code, parser.fn(output, format));
       });
     };
 
@@ -101,12 +112,8 @@ shelly.exec('git help -a', {
     var git = 'git '+ cmd +' '
       , format;
 
-    if ('string' === typeof params) {
-      format = formatter.extract(params);
-      git += formatter.reformat(params);
-    } else if ('function' === typeof params) {
-      fn = params;
-    }
+    if ('string' === typeof params)  git += params;
+    if ('function' === typeof params) fn = params;
 
     shelly.cd(this.__dirname);
     debug('executing cmd', git);

@@ -52,10 +52,10 @@ function parser(line, format) {
       //
       // Author information.
       //
-      case '%an': data.authored = data.authored || {}; data.authoried.name = result[i]; break;
-      case '%aN': data.authored = data.authored || {}; data.authoried.name_map = result[i]; break;
-      case '%ae': data.authored = data.authored || {}; data.authoried.email = result[i]; break;
-      case '%aE': data.authored = data.authored || {}; data.authoried.email_map = result[i]; break;
+      case '%an': data.authored = data.authored || {}; data.authored.name = result[i]; break;
+      case '%aN': data.authored = data.authored || {}; data.authored.name_map = result[i]; break;
+      case '%ae': data.authored = data.authored || {}; data.authored.email = result[i]; break;
+      case '%aE': data.authored = data.authored || {}; data.authored.email_map = result[i]; break;
       case '%ad': data.authored = data.authored || {}; data.authored.date = result[i]; break;
       case '%aD': data.authored = data.authored || {}; data.authored.rfc = result[i]; break;
       case '%ar': data.authored = data.authored || {}; data.authored.ago = result[i]; break;
@@ -71,14 +71,14 @@ function parser(line, format) {
       case '%cE': data.commited = data.commited || {}; data.commited.email_map = result[i]; break;
       case '%cd': data.commited = data.commited || {}; data.commited.date = result[i]; break;
       case '%cD': data.commited = data.commited || {}; data.commited.rfc = result[i]; break;
-      case '%cr': data.commited = data.commited || {}; data.comimted.ago = result[i]; break;
+      case '%cr': data.commited = data.commited || {}; data.commited.ago = result[i]; break;
       case '%ct': data.commited = data.commited || {}; data.commited.unix = +result[i]; break;
       case '%ci': data.commited = data.commited || {}; data.commited.iso = result[i]; break;
 
       //
       // Actual commit information.
       //
-      case '%d': data.ref = result[i]; break;
+      case '%d': data.ref = result[i].trim(); break;
       case '%e': data.encoding = result[i]; break;
       case '%s': data.subject = result[i]; break;
       case '%f': data.subject_name = result[i]; break;
@@ -132,7 +132,7 @@ function reformatter(args) {
 function extract(arg) {
   var format = /--pretty=format\:(\'|\")(.+)\1/g.exec(arg);
 
-  return arg ? arg[2] : '';
+  return format ? format[2] : '';
 }
 
 //
