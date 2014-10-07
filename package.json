@@ -21,11 +21,12 @@
   },
   "homepage": "https://github.com/3rd-Eden/git-shizzle",
   "dependencies": {
-    "fusing": "^0.3.2"
+    "fusing": "0.3.x",
+    "git-format": "0.0.x"
   },
   "devDependencies": {
-    "assume": "0.0.9",
-    "mocha": "^1.21.4",
-    "pre-commit": "0.0.9"
+    "assume": "0.0.x",
+    "mocha": "1.21.x",
+    "pre-commit": "0.0.x"
   }
 }

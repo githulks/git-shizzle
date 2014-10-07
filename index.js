@@ -1,7 +1,7 @@
 'use strict';
 
 var debug = require('diagnostics')('git-shizzle')
-  , formatter = require('./deformat')
+  , formatter = require('git-format')
   , shelly = require('shelljs')
   , fuse = require('fusing');
 
