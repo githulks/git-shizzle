@@ -145,7 +145,7 @@ Git.parse = function parse(method, data, fn) {
 };
 
 Git.parse('tags', {
-  params: '--date-order --graph --tags --simplify-by-decoration --pretty=format:"%ai %h %d %s %cr %ae"',
+  params: '--date-order --tags --simplify-by-decoration --pretty=format:"%ai %h %d %s %cr %ae"',
   cmd: 'log'
 }, function parse(output, format) {
   return output.split(/\n/).map(function map(line) {
