@@ -119,7 +119,13 @@ shelly.exec('git help -a', {
     shelly.cd(this.__dirname);
     debug('executing cmd', git);
 
-    return shelly.exec(git.trim(), { silent: true }, fn).output || '';
+    var res = shelly.exec(git.trim(), { silent: true }, fn ? function cb(code, output) {
+      if (+code) return fn(new Error((output || 'Incorrect #'+ code).trim()));
+
+      fn(undefined, output);
+    } : undefined);
+
+    return res.output || '';
   });
 
   Git.commands.push(cmd);
