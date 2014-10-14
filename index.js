@@ -3,7 +3,8 @@
 var debug = require('diagnostics')('git-shizzle')
   , formatter = require('git-format')
   , shelly = require('shelljs')
-  , fuse = require('fusing');
+  , fuse = require('fusing')
+  , path = require('path');
 
 /**
  * Create a human readable interface for interacting with the git binary that is
@@ -122,6 +123,20 @@ shelly.exec('git help -a', {
   });
 
   Git.commands.push(cmd);
+});
+
+/**
+ * CD in to another directory.
+ *
+ * @type {Function}
+ * @returns {Git}
+ * @api public
+ */
+Git.readable('cd', function (dir) {
+  this.__dirname = path.join(this.__dirname, dir);
+
+  debug('updated the directory to', this.__dirname);
+  return this;
 });
 
 /**
