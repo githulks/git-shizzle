@@ -21,13 +21,13 @@
   },
   "homepage": "https://github.com/3rd-Eden/git-shizzle",
   "dependencies": {
-    "fusing": "0.3.x",
+    "fusing": "0.4.x",
     "git-format": "0.0.x",
     "shelljs": "0.3.x"
   },
   "devDependencies": {
     "assume": "0.0.x",
-    "mocha": "1.21.x",
+    "mocha": "2.0.x",
     "pre-commit": "0.0.x"
   }
 }
