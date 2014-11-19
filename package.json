@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/3rd-Eden/git-shizzle",
   "dependencies": {
+    "diagnostics": "0.0.x",
     "fusing": "0.4.x",
     "git-format": "0.0.x",
     "shelljs": "0.3.x"
