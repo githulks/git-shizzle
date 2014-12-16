@@ -165,12 +165,48 @@ Git.parse = function parse(method, data, fn) {
   return Git;
 };
 
+/**
+ * Parse a list of tags out of the git logs.
+ *
+ * @type {Function}
+ * @public
+ */
 Git.parse('tags', {
   params: '--date-order --tags --simplify-by-decoration --pretty=format:"%ai %h %d %s %cr %ae"',
   cmd: 'log'
 }, function parse(output, format) {
   return output.split(/\n/).map(function map(line) {
     return formatter(line, format);
+  });
+});
+
+/**
+ * Parse the changes out of git log.
+ *
+ * @type {Function}
+ * @public
+ */
+Git.parse('changes', {
+  params: '--name-status --pretty=format:"%ai %h %d %s %cr %ae"',
+  cmd: 'log'
+}, function parse(output, format) {
+  var commited = { M: 'modified', A: 'added', D: 'deleted' }
+    , sep = formatter.separator;
+
+  return output.split(/\n{2}/).slice(10).map(function reformat(line) {
+    var changes = line.slice(line.lastIndexOf(sep) + sep.length).trim()
+      , meta = formatter(line, format);
+
+    meta.changes = changes.split(/\n/).reduce(function reduce(memo, change) {
+      var type = commited[change.charAt(0)];
+
+      if (!memo[type]) memo[type] = [];
+      memo[type].push(change.slice(2));
+
+      return memo;
+    }, {});
+
+    return meta;
   });
 });
 
