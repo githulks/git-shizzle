@@ -120,10 +120,18 @@ shelly.exec('git help -a', {
     debug('executing cmd', git);
 
     var res = shelly.exec(git.trim(), { silent: true }, fn ? function cb(code, output) {
-      if (+code) return fn(new Error((output || 'Incorrect #'+ code).trim()));
+      if (+code) return fn(new Error((output || 'Incorrect code #'+ code).trim()));
 
       fn(undefined, output);
     } : undefined);
+
+    //
+    // Make sure we throw a code in sync mode instead of returning the error
+    // body.
+    //
+    if (!fn && +res.code) {
+      throw new Error((res.output || 'Incorrect code #'+ res.code).trim());
+    }
 
     return res.output || '';
   });
