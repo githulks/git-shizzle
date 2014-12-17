@@ -24,7 +24,7 @@ following:
 ```js
 'use stict';
 
-var git = require('git-shizzle');
+var Git = require('git-shizzle');
 ```
 
 We export `git` as a constructor but the API is we're using in the examples
@@ -32,26 +32,26 @@ allows chaining which results more readable code. So to create a git instance
 you can do:
 
 ```js
-git();
+Git();
 ```
 
 Or:
 
 ```js
-new git()
+new Git()
 ```
 
 To get the `status` of a git repository we can simply call the status method:
 
 ```js
-var status = git().status();
+var status = Git().status();
 ```
 
 We can pass command line flags as arguments in the `status` method so if we want
 to have an easy to parse format we can add the `--porcelain` option:
 
 ```js
-var status = git().status('--porcelain');
+var status = Git().status('--porcelain');
 ```
 
 As stated in the introduction text of this document we support both async and
@@ -59,7 +59,7 @@ As stated in the introduction text of this document we support both async and
 callback as last argument if you want **async** mode.
 
 ```js
-git().status('--porcelain', function (err, output) {
+Git().status('--porcelain', function (err, output) {
   console.log(output);
 });
 ```
@@ -70,6 +70,42 @@ The API methods depend on the version of `git` that is installed on your system.
 We parse our the commands from the `git help -a` output and introduce those in
 the prototype. Commands that contain a dash like `symbolic-ref` are also aliased
 with a camel case so it can be used as `symbolRef`.
+
+## Custom parsers
+
+As there thousands of ways to extract and parse data from git we added an
+convenience method for parsing the output. You can register a custom parser
+using:
+
+```
+Git.parse('<name>', {
+  params: '--pretty=format:"%ai"',
+  cmd: 'log'
+}, function (output, format, formatter) {
+
+});
+```
+
+- The `<name>` is the name of parser which will be introduced on the `.parse`
+  object.
+- The `params:` allows you to configure the params that it should pass in to the
+  git command. If you include a `--pretty:format` we automatically wrap the
+  placeholders using the `git-format` module so it can be easily extracted.
+- The `cmd:` allows you to configure which method needs to be called.
+
+The code above will introduce a new `.parse` property with the name `<name>`. So
+if name was set to `example` we could use th newly introduced parser as:
+
+```js
+var output = Git().parse.example();
+
+//
+// Or async
+//
+Git().parse.example(function (err, output) {
+
+});
+```
 
 ## Debugging
 
