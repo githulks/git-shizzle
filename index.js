@@ -46,12 +46,12 @@ function Git(dir) {
       format = formatter.extract(args) || '';
       args = formatter.reformat(args);
 
-      if (!async) return parser.fn(git[parser.method](args), format);
+      if (!async) return parser.fn(git[parser.method](args), format, formatter);
 
       return git[parser.cmd || parser.method](args, function async(code, output) {
         if (+code) return fn(code, output);
 
-        fn(code, parser.fn(output, format));
+        fn(code, parser.fn(output, format, formatter));
       });
     };
 
@@ -174,7 +174,7 @@ Git.parse = function parse(method, data, fn) {
 Git.parse('tags', {
   params: '--date-order --tags --simplify-by-decoration --pretty=format:"%ai %h %d %s %cr %ae"',
   cmd: 'log'
-}, function parse(output, format) {
+}, function parse(output, format, formatter) {
   return output.split(/\n/).map(function map(line) {
     return formatter(line, format);
   });
@@ -189,7 +189,7 @@ Git.parse('tags', {
 Git.parse('changes', {
   params: '--name-status --pretty=format:"%ai %h %d %s %cr %ae"',
   cmd: 'log'
-}, function parse(output, format) {
+}, function parse(output, format, formatter) {
   var commited = { M: 'modified', A: 'added', D: 'deleted' }
     , sep = formatter.separator;
 
