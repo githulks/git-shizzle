@@ -28,7 +28,8 @@ function Git(dir) {
   this.__dirname = dir;
 
   var git = this;
-  this.parse = this._parsers.reduce(function (parsers, parser) {
+
+  this.parse = this._parsers.reduce(function reduce(parsers, parser) {
     parsers[parser.method] = function proxy(params, fn) {
       var async = 'function' === typeof arguments[arguments.length - 1]
         , args = parser.params +' '
@@ -65,11 +66,23 @@ fuse(Git);
  * List of all commands that are available for git.
  *
  * @type {Array}
- * @private
+ * @public
  */
 Git.commands = [];
 
-shelly.exec('git help -a', {
+/**
+ * The path to the `git` binary.
+ *
+ * @type {String}
+ * @public
+ */
+Git.path = shelly.which('git');
+
+//
+// This is where all the magic happens. We're going to extract all the commands
+// that this `git` binary supports and introduce them as API's on the prototype.
+//
+shelly.exec(Git.path +' help -a', {
   silent: true
 }).output.split(/([\w|\-]+)\s{2,}/g).filter(function filter(line) {
   var trimmed = line.trim();
@@ -110,7 +123,7 @@ shelly.exec('git help -a', {
    * @api public
    */
   Git.readable(method, function proxycmd(params, fn) {
-    var git = 'git '+ cmd +' '
+    var git = Git.path +' '+ cmd +' '
       , format;
 
     if ('string' === typeof params)  git += params;
