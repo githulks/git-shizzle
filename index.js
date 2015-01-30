@@ -184,8 +184,13 @@ Git.parse('tags', {
   cmd: 'log'
 }, function parse(output, format, formatter) {
   return output.split(/\n/).map(function map(line) {
-    return formatter(line, format);
-  });
+    var meta = formatter(line, format);
+
+    //
+    // Only return if it's an actual tag.
+    //
+    if (~meta.ref.indexOf('tag:')) return meta;
+  }).filter(Boolean);
 });
 
 /**
