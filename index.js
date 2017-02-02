@@ -47,7 +47,7 @@ function Git(dir) {
       format = formatter.extract(args) || '';
       args = formatter.reformat(args);
 
-      if (!async) return parser.fn(git[parser.method](args), format, formatter);
+      if (!async) return parser.fn(git[parser.cmd || parser.method](args), format, formatter);
 
       return git[parser.cmd || parser.method](args, function async(code, output) {
         if (+code) return fn(code, output);
