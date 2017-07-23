@@ -26,7 +26,7 @@
   "dependencies": {
     "diagnostics": "1.1.x",
     "fusing": "1.0.x",
-    "git-format": "0.0.x",
+    "git-format": "~0.0.1",
     "shelljs": "0.3.x"
   },
   "devDependencies": {
