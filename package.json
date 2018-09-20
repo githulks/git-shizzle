@@ -27,12 +27,12 @@
     "diagnostics": "1.1.x",
     "fusing": "1.0.x",
     "git-format": "0.0.x",
-    "shelljs": "0.3.x"
+    "shelljs": "0.8.x"
   },
   "devDependencies": {
-    "assume": "~1.5.0",
-    "istanbul": "~0.4.5",
-    "mocha": "~3.3.0",
-    "pre-commit": "~1.2.0"
+    "assume": "2.1.x",
+    "istanbul": "0.4.x",
+    "mocha": "5.2.x",
+    "pre-commit": "1.2.x"
   }
 }

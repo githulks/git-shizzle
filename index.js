@@ -6,6 +6,13 @@ var debug = require('diagnostics')('git-shizzle')
   , fuse = require('fusing')
   , path = require('path');
 
+//
+// Latest upgrade of shelljs does not honor the { silent } when it encounters
+// an error. We have to globally silent the utility in order for the messages
+// to stop.
+//
+shelly.config.silent = true;
+
 /**
  * Create a human readable interface for interacting with the git binary that is
  * installed on the users host system. This allows us to interact with the git
@@ -76,15 +83,25 @@ Git.commands = [];
  * @type {String}
  * @public
  */
-Git.path = shelly.which('git');
+Git.path = shelly.which('git').stdout;
 
 //
 // This is where all the magic happens. We're going to extract all the commands
 // that this `git` binary supports and introduce them as API's on the prototype.
-//
-shelly.exec(Git.path +' help -a', {
-  silent: true
-}).output.split(/([\w|\-]+)\s{2,}/g).filter(function filter(line) {
+var help = ['git', Git.path].reduce(function find(memo, path) {
+  if (memo) return memo;
+
+  var exec = shelly.exec(path + ' help -a', { silent: true });
+
+  if (exec.stdout) {
+    Git.path = path;
+    return exec.stdout;
+  }
+
+  return memo;
+}, '');
+
+help.split(/([\w|\-]+)\s{2,}/g).filter(function filter(line) {
   var trimmed = line.trim();
 
   //
@@ -132,10 +149,10 @@ shelly.exec(Git.path +' help -a', {
     shelly.cd(this.__dirname);
     debug('executing cmd', git);
 
-    var res = shelly.exec(git.trim(), { silent: true }, fn ? function cb(code, output) {
-      if (+code) return fn(new Error((output || 'Incorrect code #'+ code).trim()));
+    var res = shelly.exec(git.trim(), { silent: true }, fn ? function cb(code, stdout, stderr) {
+      if (+code) return fn(new Error((stderr || 'Incorrect code #'+ code).trim()));
 
-      fn(undefined, output);
+      fn(undefined, stdout);
     } : undefined);
 
     //
@@ -143,10 +160,10 @@ shelly.exec(Git.path +' help -a', {
     // body.
     //
     if (!fn && +res.code) {
-      throw new Error((res.output || 'Incorrect code #'+ res.code).trim());
+      throw new Error((res.stderr || 'Incorrect code #'+ res.code).trim());
     }
 
-    return res.output || '';
+    return res.stdout || '';
   });
 
   Git.commands.push(cmd);
