@@ -83,7 +83,12 @@ Git.commands = [];
  * @type {String}
  * @public
  */
-Git.path = shelly.which('git').stdout;
+try {
+  Git.path = shelly.which('git').stdout;
+} catch (e) {
+  shelly.echo('This environment does not have a git binary');
+  shelly.exit(0);
+}
 
 //
 // This is where all the magic happens. We're going to extract all the commands
