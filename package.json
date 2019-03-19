@@ -30,7 +30,7 @@
     "shelljs": "0.8.x"
   },
   "devDependencies": {
-    "assume": "2.1.x",
+    "assume": "~2.2.0",
     "istanbul": "0.4.x",
     "mocha": "5.2.x",
     "pre-commit": "1.2.x"
