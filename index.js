@@ -86,8 +86,8 @@ Git.commands = [];
 try {
   Git.path = shelly.which('git').stdout;
 } catch (e) {
-  shelly.echo(e);
-  shelly.echo('This environment does not have a git binary');
+  debug(e);
+  debug('This environment does not have a git binary');
 }
 
 //
